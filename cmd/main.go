@@ -3,18 +3,24 @@ package main
 import (
 	"test/internal/config"
 	"test/internal/tracer"
+	"time"
 
 	"net/http"
 	_ "net/http/pprof"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
 func main() {
 	setLogLevel()
 
 	app := fiber.New()
+	app.Use(limiter.New(limiter.Config{
+		Max:        config.RateLimit,
+		Expiration: 1 * time.Minute,
+	}))
 
 	app.Get("/seperation", func(c *fiber.Ctx) error {
 		from := c.Query("from")

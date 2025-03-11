@@ -15,6 +15,7 @@ const envPath = "no-secrets.env"
 var (
 	Port                        string // PORT
 	PprofPort                   string // PPROF_PORT
+	RateLimit                   int    // RATE_LIMIT
 	LogLevel                    string // LOG_LEVEL
 	PersonDataFetchWorkersCount int    // PERSON_DATA_FETCH_WORKERS_COUNT
 	MovieDataFetchWorkersCount  int    // MOVIE_DATA_FETCH_WORKERS_COUNT
@@ -35,6 +36,7 @@ func LoadEnv() {
 	Port = getEnvString("PORT", "3001")
 	PprofPort = getEnvString("PPROF_PORT", "6060")
 	LogLevel = getEnvString("LOG_LEVEL", "INFO")
+	RateLimit = getEnvInt("RATE_LIMIT", 10)
 	PersonDataFetchWorkersCount = getEnvInt("PERSON_DATA_FETCH_WORKERS_COUNT", 10)
 	MovieDataFetchWorkersCount = getEnvInt("MOVIE_DATA_FETCH_WORKERS_COUNT", 10)
 	LogGoroutineCount = getEnvBool("LOG_GOROUTINE_COUNT", false)
