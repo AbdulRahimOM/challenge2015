@@ -26,14 +26,10 @@ func FindSeperation(p1URL string, targetPerson string) (int, error) {
 		personURLQueue = []string{p1URL}
 		visitedPersons = make(map[string]bool)
 		visitedMovies  = make(map[string]bool)
-		ctx            = context.Background()
 	)
 
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
 	for seperation := 2; len(personURLQueue) > 0; seperation++ {
-		found, newPersonURLQueue := findTargetOrNextPersonList(ctx, personURLQueue, targetPerson, visitedPersons, visitedMovies)
+		found, newPersonURLQueue := findTargetOrNextPersonList(personURLQueue, targetPerson, visitedPersons, visitedMovies)
 		if found {
 			return seperation, nil
 		}
@@ -44,13 +40,16 @@ func FindSeperation(p1URL string, targetPerson string) (int, error) {
 
 }
 
-func findTargetOrNextPersonList(ctx context.Context, personURLQueue []string, targetPerson string, visitedPersons map[string]bool, visitedMovies map[string]bool) (bool, []string) {
+func findTargetOrNextPersonList(personURLQueue []string, targetPerson string, visitedPersons map[string]bool, visitedMovies map[string]bool) (bool, []string) {
 	var (
-		personChan = make(chan *data.Person, 10)
-		movieChan  = make(chan *data.Movie, 10)
-
+		personChan   = make(chan *data.Person, 10)
+		movieChan    = make(chan *data.Movie, 10)
 		movieUrlChan = make(chan string, 100)
+		ctx          = context.Background()
 	)
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
 	go startFetchingPersons(personURLQueue, personChan, ctx)
 	for _, personURL := range personURLQueue {

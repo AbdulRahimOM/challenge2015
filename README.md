@@ -65,6 +65,25 @@ The application can be configured using the following environment variables:
 - `PERSON_DATA_FETCH_WORKERS`: Number of concurrent person data fetchers
 - `MOVIE_DATA_FETCH_WORKERS`: Number of concurrent movie data fetchers
 
+## 📥 Getting Started
+
+1. Clone the repository:
+```bash
+git clone https://github.com/AbdulRahimOM/challenge2015.git
+cd challenge2015
+```
+
+2. Install dependencies:
+```bash
+go mod download
+```
+
+3. Copy the environment file and configure:
+```bash
+cp no-secrets.env .env
+# Edit .env with your preferred settings (or keep it as it is to run in default settings)
+```
+
 ## 🚀 Running the Application
 
 1. Set up environment variables (optional)
