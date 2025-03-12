@@ -1,52 +1,114 @@
-#Degrees of Separation
+# 🎬 Degrees of Separation - Movie Industry Connections
 
-With cinema going global these days, every one of the [A-Z]ollywoods are now connected. Use the wealth of data available at [Moviebuff](http://www.moviebuff.com) to see how. 
+This Go application finds the degrees of separation between two people in the movie industry using data from Moviebuff. It implements an efficient graph traversal algorithm with concurrent data fetching to determine the shortest path between two industry professionals through their movie collaborations.
 
-Write a Go program that behaves the following way:
+## ✨ Features
 
+- 🚀 **Concurrent Data Fetching**: Efficiently fetches data from external APIs using goroutines
+- 💾 **In-Memory Caching**: Implements a thread-safe caching mechanism for person and movie data
+- 🛡️ **Rate Limiting**: Protects against API throttling with built-in rate limiting
+- 📊 **Performance Monitoring**: Includes pprof endpoints for runtime analysis
+- ⚡ **Graceful Error Handling**: Robust error handling for API failures and invalid inputs
+- ⚙️ **Configuration via Environment Variables**: Flexible configuration through environment variables
+- 🔄 **Resource Management**: Proper channel and goroutine lifecycle management
+
+## 🏗️ Architecture
+
+### 🌐 Data Fetching
+- Uses worker pools for concurrent data fetching from external APIs
+- Implements separate workers for person and movie data
+- Controlled concurrency with predefined worker counts
+
+### 📦 Caching
+- Thread-safe in-memory cache using maps
+- Implements `sync.RWMutex` for concurrent read/write operations
+- Caches both person and movie data after fetching
+
+### 📈 Performance & Monitoring
+- Pprof endpoints for runtime profiling and debugging
+- Periodic logging of goroutine statistics
+- Rate limiting to prevent API throttling
+
+### 🛠️ Error Handling & Resource Management
+- Context-based cancellation for cleanup
+- Proper channel closing mechanisms
+- Graceful error handling for API failures
+- Existence validation (of target person) to prevent long unnecessary searches
+
+## 🔌 API Endpoints
+
+### GET /separation
+Query Parameters:
+- `from`: Moviebuff URL of the first person
+- `to`: Moviebuff URL of the second person
+
+Example:
 ```
-$ degrees amitabh-bachchan robert-de-niro
-
-Degrees of Separation: 3
-
-1. Movie: The Great Gatsby
-Supporting Actor: Amitabh Bachchan
-Actor: Leonardo DiCaprio
-
-2. Movie: The Wolf of Wall Street
-Actor: Leonardo DiCaprio
-Director: Martin Scorsese
-
-3. Movie: Taxi Driver
-Director: Martin Scorsese
-Actor: Robert De Niro
+GET /separation?from=amitabh-bachchan&to=robert-de-niro
 ```
 
-Your solution should use the Moviebuff data available to figure out the smallest degree of separation between the two people. 
-All the inputs should be Moviebuff URLs for their respective people: For Amitabh Bachchan, his page is on http://www.moviebuff.com/amitabh-bachchan and his Moviebuff URL is `amitabh-bachchan`.
+Response:
+```json
+{
+    "separation": 3
+}
+```
 
-Please do not attempt to scrape the Moviebuff website - All the data is available on an S3 bucket in an easy to parse JSON format here: `https://data.moviebuff.com/{moviebuff_url}`
+## ⚙️ Configuration
 
-To solve the example above, your solution would fetch at least the following:
+The application can be configured using the following environment variables:
 
-http://data.moviebuff.com/amitabh-bachchan
+- `PORT`: Server port (default: 3001)
+- `PPROF_PORT`: Port for pprof endpoints
+- `LOG_LEVEL`: Logging level (debug/info)
+- `RATE_LIMIT`: API rate limit per minute
+- `PERSON_DATA_FETCH_WORKERS`: Number of concurrent person data fetchers
+- `MOVIE_DATA_FETCH_WORKERS`: Number of concurrent movie data fetchers
 
-http://data.moviebuff.com/the-great-gatsby
+## 🚀 Running the Application
 
-http://data.moviebuff.com/leonardo-dicaprio
+1. Set up environment variables (optional)
+2. Run the application:
+```bash
+go run cmd/main.go
+```
 
-http://data.moviebuff.com/the-wolf-of-wall-street
+## 💪 Performance Considerations
 
-http://data.moviebuff.com/martin-scorsese
+1. **Concurrent Data Fetching**
+   - 🔄 Optimized worker pools for API requests
+   - 👥 Separate workers for person and movie data
 
-http://data.moviebuff.com/taxi-driver
+2. **Caching**
+   - 📦 In-memory caching reduces API calls
+   - 🔒 Thread-safe read/write operations
 
-##Notes
-* If you receive HTTP errors when trying to fetch the data, that might be the CDN throttling you. Luckily, Go has some very elegant idioms for rate limiting :)
-* There may be a discrepancy in some cases where a movie appears on an actor's list but not vice versa. This usually happens when we edit data while exporting it, so feel free to either ignore these mismatches or handle them in some way.
+3. **Resource Management**
+   - ⚡ Context-based cancellation
+   - 🧹 Proper cleanup of resources
+   - 🛡️ Rate limiting to prevent throttling
 
-Write a program in any language you want (If you're here from Gophercon, use Go :D) that does this. Feel free to make your own input and output format / command line tool / GUI / Webservice / whatever you want. Feel free to hold the dataset in whatever structure you want, but try not to use external databases - as far as possible stick to your langauage without bringing in MySQL/Postgres/MongoDB/Redis/Etc.
+## 📊 Monitoring
 
-To submit a solution, fork this repo and send a Pull Request on Github.
+### 🔍 Pprof Endpoints
+Access pprof endpoints at:
+```
+http://localhost:{PPROF_PORT}/debug/pprof/
+```
 
-For any questions or clarifications, raise an issue on this repo and we'll answer your questions as fast as we can.
+Available profiles:
+- 🧵 Goroutine
+- 💾 Heap
+- 🔄 Thread
+- 🚫 Block
+- 📈 CPU profile
+
+## 🔮 Future Improvements
+- ⏰ Add cache expiration mechanism (Relevant, as new movies and persons are added)
+- 🔗 Show connection chain along with degree of seperation
+
+## 📚 Dependencies
+
+- 🚀 [Fiber](github.com/gofiber/fiber/v2) - Web framework
+- 📦 Standard Go libraries for concurrency and HTTP operations
+
